@@ -74,7 +74,7 @@ export const login = async (req, res) => {
         });
       }
 
-      // If we get the correct username and password, then we will create a token and store in cookie in order to trace user logedIn
+      // If we get the correct username and password, then we will create a token and store in cookie in order to trace authentication later.
       const tokenData = {
         userId: user._id
       }
@@ -106,7 +106,7 @@ export const logout = async (req, res)=>{
 export const getOtherUsers = async (req, res) => {
   try {
     const loggedInUserId = req.id;
-    const otherUsers = await User.find({_id:{$ne:loggedInUserId}}).select("-password");
+    const otherUsers = await User.find({_id:{$ne:loggedInUserId}}).select("-password"); //return all the users other than loggedIn excluding password.
     return res.status(200).json(otherUsers);
   } catch (error) {
         console.log(error);
