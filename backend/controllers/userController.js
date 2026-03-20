@@ -50,49 +50,54 @@ export const register = async (req, res) => {
 
 // Login of an User
 export const login = async (req, res) => {
-    try {
-      const { username, password } = req.body;
-      if (!username || !password) {
-        return res.status(400).json({ message: "All fields are required." });
-      }
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-      // check: If user already exist.
-      const user = await User.findOne({ username });
-      if (!user) {
-        return res.status(400).json({
-          message: "Incorrect Username. Try Again!",
-          success: false,
-        });
-      }
+    // check: If user already exist.
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(400).json({
+        message: "Incorrect username or password",
+        success: false,
+      });
+    }
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(400).json({
+        message: "Incorrect username or password",
+        success: false,
+      });
+    }
+    const tokenData = {
+      userId: user._id,
+    };
 
-      // check: If Password matched exist.
-      const isPasswordMatched = await bcrypt.compare(password, user.password);
-      if (!isPasswordMatched) {
-        return res.status(400).json({
-          message: "Incorrect Password. Try Again!",
-          success: false,
-        });
-      }
+    const token = await jwt.sign(tokenData, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1d",
+    });
 
-      // If we get the correct username and password, then we will create a token and store in cookie in order to trace authentication later.
-      const tokenData = {
-        userId: user._id
-      }
+    console.log("Generated Token: ", token);
 
-      const token = await jwt.sign(tokenData, process.env.JWT_SECRET_KEY, {expiresIn: '1d'});
-      console.log("Generated Token:", token);
-
-      return res.status(200).cookie("token", token, {maxAge: 1*24*60*60*1000, httpOnly: true, sameSite: "strict"}).json({
+    return res
+      .status(200)
+      .cookie("token", token, {
+        maxAge: 1 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: "strict",
+      })
+      .json({
         _id: user._id,
         username: user.username,
         fullName: user.fullName,
-        profilePhoto: user.profilePhoto
-      })
-
-    } catch (error) {   
-        console.log(error);
-    }
-}
+        profilePhoto: user.profilePhoto,
+      });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const logout = async (req, res)=>{
     try {
