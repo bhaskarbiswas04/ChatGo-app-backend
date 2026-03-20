@@ -1,8 +1,8 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config({});
 
-import cookieParser from "cookie-parser";
 
 import connectDB from "./config/database.js";
 
