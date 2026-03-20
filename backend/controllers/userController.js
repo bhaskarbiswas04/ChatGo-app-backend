@@ -79,8 +79,6 @@ export const login = async (req, res) => {
       expiresIn: "1d",
     });
 
-    console.log("Generated Token: ", token);
-
     return res
       .status(200)
       .cookie("token", token, {
