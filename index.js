@@ -30,7 +30,7 @@ app.use(cors(corsOptions));
 
 //routes
 app.get("/", (req, res) => {
-  res.send("🚀 Backend is runningplication chatGo.");
+  res.send("🚀 Backend is running - Chat application chatGo.");
 });
 
 app.use("/api/v1/user", userRoute);
