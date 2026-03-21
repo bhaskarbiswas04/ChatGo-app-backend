@@ -1,5 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors"
 import dotenv from "dotenv";
 dotenv.config({});
 
@@ -16,8 +17,16 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 //middleware
+app.use(express.urlencoded({extended: true}))
 app.use(express.json());
 app.use(cookieParser());
+
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 
 //routes
 app.get("/", (req, res) => {
